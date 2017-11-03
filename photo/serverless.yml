@@ -1,0 +1,29 @@
+service:
+  name: photos
+
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: ${opt:stage, 'dev'}
+
+custom:
+  userspaceBucket:
+    name: ${self:provider.stage}-photo-service-userspace
+
+functions:
+  create:
+    handler: create.handle
+    events:
+      - s3:
+          bucket: ${self:custom.userspaceBucket.name}
+          event: s3:ObjectCreated:*
+
+# resources:
+#   Resources:
+#     userspaceBucket:
+#       Type: AWS::S3::Bucket
+#       Properties:
+#         BucketName: ${self:custom.userspaceBucket.name}
